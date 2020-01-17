@@ -1,74 +1,74 @@
 require('sinatra')
 require('sinatra/reloader')
-require('./lib/album')
-require('./lib/song')
+require('./lib/project')
+require('./lib/volunteer')
 require('pry')
 also_reload('lib/**/*.rb')
 
 get('/') do
-  redirect to('/albums')
+  redirect to('/projects')
 end
 
-get('/albums') do
-  @albums = Album.all
-  erb(:albums)
+get('/projects') do
+  @projects = Project.all
+  erb(:projects)
 end
 
-get ('/albums/new') do
-  erb(:new_album)
+get ('/projects/new') do
+  erb(:new_project)
 end
 
-post ('/albums') do
-  name = params[:album_name]
-  album = Album.new({:name => name, :id => nil})
-  album.save()
-  redirect to('/albums')
+post ('/projects') do
+  name = params[:project_name]
+  project = Project.new({:name => name, :id => nil})
+  project.save()
+  redirect to('/projects')
 end
 
-get ('/albums/:id') do
-  @album = Album.find(params[:id].to_i())
-  erb(:album)
+get ('/projects/:id') do
+  @project = Project.find(params[:id].to_i())
+  erb(:project)
 end
 #
-get ('/albums/:id/edit') do
-  @album = Album.find(params[:id].to_i())
-  erb(:edit_album)
+get ('/projects/:id/edit') do
+  @project = Project.find(params[:id].to_i())
+  erb(:edit_project)
 end
 
-patch ('/albums/:id') do
-  @album = Album.find(params[:id].to_i())
-  @album.update(params[:name])
-  redirect to('/albums')
+patch ('/projects/:id') do
+  @project = Project.find(params[:id].to_i())
+  @project.update(params[:name])
+  redirect to('/projects')
 end
 
-delete ('/albums/:id') do
-  @album = Album.find(params[:id].to_i())
-  @album.delete()
-  redirect to('/albums')
+delete ('/projects/:id') do
+  @project = Project.find(params[:id].to_i())
+  @project.delete()
+  redirect to('/projects')
 end
 
-get ('/albums/:id/songs/:song_id') do
-  @song = Song.find(params[:song_id].to_i())
-  erb(:song)
+get ('/projects/:id/volunteers/:volunteer_id') do
+  @volunteer = Volunteer.find(params[:volunteer_id].to_i())
+  erb(:volunteer)
 end
 
-post ('/albums/:id/songs') do
-  @album = Album.find(params[:id].to_i())
-  song = Song.new({:name => params[:song_name], :album_id => @album.id, :id => nil})
-  song.save()
-  erb(:album)
+post ('/projects/:id/volunteers') do
+  @project = Project.find(params[:id].to_i())
+  volunteer = Volunteer.new({:name => params[:volunteer_name], :project_id => @project.id, :id => nil})
+  volunteer.save()
+  erb(:project)
 end
 
-patch ('/albums/:id/songs/:song_id') do
-  @album = Album.find(params[:id].to_i())
-  song = Song.find(params[:song_id].to_i())
-  song.update(params[:name], @album.id)
-  erb(:album)
+patch ('/projects/:id/volunteers/:volunteer_id') do
+  @project = Project.find(params[:id].to_i())
+  volunteer = Volunteer.find(params[:volunteer_id].to_i())
+  volunteer.update(params[:name], @project.id)
+  erb(:project)
 end
 
-delete ('/albums/:id/songs/:song_id') do
-  song = Song.find(params[:song_id].to_i())
-  song.delete
-  @album = Album.find(params[:id].to_i())
-  erb(:album)
+delete ('/projects/:id/volunteers/:volunteer_id') do
+  volunteer = Volunteer.find(params[:volunteer_id].to_i())
+  volunteer.delete
+  @project = Project.find(params[:id].to_i())
+  erb(:project)
 end
