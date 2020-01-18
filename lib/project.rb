@@ -1,21 +1,27 @@
 class Project
   attr_accessor :name
-  attr_reader :id
 
-  @@projects = {}
-  @@total_rows = 0
+  # Class variables have been removed.
 
   def initialize(attributes)
     @name = attributes.fetch(:name)
-    @id = attributes.fetch(:id) || @@total_rows += 1
+    @id = attributes.fetch(:id) # Note that this line has been changed.
   end
 
   def self.all
-    @@projects.values()
+    returned_projects = DB.exec("SELECT * FROM projects;")
+    projects = []
+    returned_projects.each() do |project|
+      name = project.fetch("name")
+      id = project.fetch("id").to_i
+      projects.push(Project.new({:name => name, :id => id}))
+    end
+    projects
   end
 
   def save
-    @@projects[self.id] = Project.new({ :name => self.name, :id => self.id })
+    result = DB.exec("INSERT INTO projects (name) VALUES ('#{@name}') RETURNING id;")
+    @id = result.first().fetch("id").to_i
   end
 
   def ==(project_to_compare)
@@ -23,21 +29,23 @@ class Project
   end
 
   def self.clear
-    @@projects = {}
-    @@total_rows = 0
+    DB.exec("DELETE FROM projects *;")
   end
 
   def self.find(id)
-    @@projects[id]
+    project = DB.exec("SELECT * FROM projects WHERE id = #{id};").first
+    name = project.fetch("name")
+    id = project.fetch("id").to_i
+    Project.new({:name => name, :id => id})
   end
 
   def update(name)
-    self.name = name
-    @@projects[self.id] = Project.new({ :name => self.name, :id => self.id })
+    @name = name
+    DB.exec("UPDATE projects SET name = '#{@name}' WHERE id = #{@id};")
   end
 
   def delete
-    @@projects.delete(self.id)
+    DB.exec("DELETE FROM projects WHERE id = #{@id};")
   end
 
   def volunteers
