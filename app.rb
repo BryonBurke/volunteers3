@@ -6,7 +6,7 @@ require('pry')
 also_reload('lib/**/*.rb')
 require("pg")
 
-DB = PG.connect({:dbname => "record_store"})
+DB = PG.connect({:dbname => "volunteer_tracker_test"})
 
 get('/') do
   redirect to('/projects')
