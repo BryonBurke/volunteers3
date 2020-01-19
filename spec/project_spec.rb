@@ -65,15 +65,15 @@ describe '#Project' do
   end
 
   describe('#delete') do
-    it("deletes an project by id") do
-      project = Project.new({:name => "A Love Supreme", :id => nil})
-      project.save()
-      project2 = Project.new({:name => "Blue", :id => nil})
-      project2.save()
-      project.delete()
-      expect(Project.all).to(eq([project2]))
-    end
+  it("deletes all volunteers belonging to a deleted project") do
+    project = Project.new({:name => "A Love Supreme", :id => nil})
+    project.save()
+    volunteer = Volunteer.new({:name => "Naima", :project_id => project.id, :id => nil})
+    volunteer.save()
+    project.delete()
+    expect(Volunteer.find(volunteer.id)).to(eq(nil))
   end
+end
 
   describe('#volunteers') do
     it("returns an project's volunteers") do
